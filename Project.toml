@@ -1,0 +1,13 @@
+name = "TimeZoneFinder"
+uuid = "3ccf6684-3f25-4581-8c58-114637dcab4a"
+authors = ["Tom Gillam <tpgillam@googlemail.com>"]
+version = "0.1.0"
+
+[compat]
+julia = "1.5"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
