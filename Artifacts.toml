@@ -1,6 +1,6 @@
 [timezone-boundary-builder-2021c]
 git-tree-sha1 = "6418fde407d1c917005a96b9615ba4758ef170cb"
-lazy = true
+lazy = false
 
     [[timezone-boundary-builder-2021c.download]]
     sha256 = "297ff27da3e50b1f2b1bcb75009ed1d8aac616fec56ff1ac081021b610017d0d"
