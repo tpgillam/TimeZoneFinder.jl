@@ -31,7 +31,7 @@ tarball_name = "$(artifact_name).tar.gz"
 tarball_path = joinpath(@__DIR__, tarball_name)
 tarball_hash = archive_artifact(hash, tarball_path)
 
-tarball_url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/$release/$tarball_name"
+tarball_url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/$(artifact_name)/$tarball_name"
 @info("Please release $tarball_path on github as $tarball_url")
 @warn(
     "If the tarball ends up at a path other than $tarball_url, " *

@@ -4,4 +4,4 @@ lazy = true
 
     [[timezone-boundary-builder-2021c.download]]
     sha256 = "297ff27da3e50b1f2b1bcb75009ed1d8aac616fec56ff1ac081021b610017d0d"
-    url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/2021c/timezone-boundary-builder-2021c.tar.gz"
+    url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/timezone-boundary-builder-2021c/timezone-boundary-builder-2021c.tar.gz"
