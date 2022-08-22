@@ -57,5 +57,4 @@ jobs:
             using Documenter: DocMeta, doctest
             using TimeZoneFinder
             DocMeta.setdocmeta!(TimeZoneFinder, :DocTestSetup, :(using TimeZoneFinder); recursive=true)
-            timezone_at(0.0, 0.0)  # Warm cache — this avoids LazyArtifacts downloading stuff appearing in output.
             doctest(TimeZoneFinder)'
