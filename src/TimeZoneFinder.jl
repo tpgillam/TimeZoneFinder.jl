@@ -3,9 +3,9 @@ module TimeZoneFinder
 export timezone_at
 
 using JSON3
+using LazyArtifacts
 using Memoize
 using Meshes
-using Pkg.Artifacts
 using TimeZones
 
 function _get_points(coord_list)::Vector{Point{2,Float64}}
@@ -30,7 +30,7 @@ end
 
 @memoize function load_data(release::AbstractString)
     artifact_name = "timezone-boundary-builder-$release"
-    dir = @artifact_str(artifact_name)
+    dir = LazyArtifacts.@artifact_str(artifact_name)
     obj = open(JSON3.read, joinpath(dir, "combined-with-oceans.json"))
 
     # Vectors that will be populated in the loop below.
