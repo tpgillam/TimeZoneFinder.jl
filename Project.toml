@@ -3,7 +3,18 @@ uuid = "3ccf6684-3f25-4581-8c58-114637dcab4a"
 authors = ["Tom Gillam <tpgillam@googlemail.com>"]
 version = "0.1.0"
 
+[deps]
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+Memoize = "c03570c3-d221-55d1-a50c-7939bbd78826"
+Meshes = "eacbb407-ea5a-433e-ab97-5258b1ca43fa"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
+
 [compat]
+JSON3 = "1"
+Memoize = "0.4"
+Meshes = "0.23"
+TimeZones = "1"
 julia = "1.5"
 
 [extras]
