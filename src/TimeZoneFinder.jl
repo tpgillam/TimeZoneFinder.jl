@@ -68,12 +68,6 @@ Get the timezone at the given `latitude` and `longitude`.
 ```jldoctest
 julia> timezone_at(52.5061, 13.358)
 Europe/Berlin (UTC+1/UTC+2)
-
-julia> timezone_at(21.508, -78.215)
-America/Havana (UTC-5/UTC-4)
-
-julia> timezone_at(50.5, 1.0)
-Etc/GMT (UTC+0)
 ```
 """
 function timezone_at(
