@@ -69,6 +69,9 @@ Get the timezone at the given `latitude` and `longitude`.
 julia> timezone_at(52.5061, 13.358)
 Europe/Berlin (UTC+1/UTC+2)
 ```
+
+Returns a `TimeZone` instance if `latitude` and `longitude` correspond to a known timezone,
+otherwise `nothing` is returned.
 """
 function timezone_at(
     latitude::AbstractFloat, longitude::AbstractFloat; release::AbstractString="2021c"
