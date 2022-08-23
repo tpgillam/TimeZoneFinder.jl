@@ -127,7 +127,7 @@ Julia process.
 end
 
 """
-    timezone_at(latitude, longitude; release="2021c")
+    timezone_at(latitude, longitude; release=LATEST_RELEASE)
 
 Get the timezone at the given `latitude` and `longitude`.
 
@@ -135,6 +135,11 @@ Get the timezone at the given `latitude` and `longitude`.
 julia> timezone_at(52.5061, 13.358)
 Europe/Berlin (UTC+1/UTC+2)
 ```
+
+The optional `release` argument can be used to specify a different version of the
+[timezone-boundary-builder](https://github.com/evansiroky/timezone-boundary-builder) dataset
+to use. By default the latest release will be used, which will be the desired setting for
+common use.
 
 Returns a `TimeZone` instance if `latitude` and `longitude` correspond to a known timezone,
 otherwise `nothing` is returned.
