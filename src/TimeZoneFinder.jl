@@ -74,7 +74,7 @@ Returns a `TimeZone` instance if `latitude` and `longitude` correspond to a know
 otherwise `nothing` is returned.
 """
 function timezone_at(
-    latitude::AbstractFloat, longitude::AbstractFloat; release::AbstractString="2021c"
+    latitude::Real, longitude::Real; release::AbstractString="2021c"
 )
     data = load_data(release)
     p = Point{2,Float64}(longitude, latitude)
