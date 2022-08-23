@@ -121,10 +121,9 @@ const TEST_LOCATIONS =
         # Clear memoize cache.
         empty!(memoize_cache(TimeZoneFinder.load_data))
 
-        if read_from_cache
-            # Ensure that binary cache exists if we expect to read from it.
-            @test isfile(TimeZoneFinder._cache_path(TimeZoneFinder.LATEST_RELEASE))
-        end
+        # Ensure that binary cache either exists or doesn't exist as we expect.
+        cache_path = TimeZoneFinder._cache_path(TimeZoneFinder.LATEST_RELEASE)
+        @test read_from_cache == isfile(cache_path)
 
         @testset "basic (read_from_cache=$read_from_cache)" begin
             # Memoize cache should be empty
