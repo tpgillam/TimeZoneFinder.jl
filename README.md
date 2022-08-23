@@ -22,7 +22,7 @@ julia> timezone_at(50.5, 1.0)
 Etc/GMT (UTC+0)
 ```
 
-Please see the [documentation](https://tpgillam.github.io/TimeZoneFinder.jl/stable/) for further details.
+Please see the [documentation](https://tpgillam.github.io/TimeZoneFinder.jl/dev/) for further details.
 
 ## References
 
