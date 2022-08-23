@@ -1,3 +1,4 @@
+using Memoize
 using Test
 using TimeZoneFinder
 using TimeZones
@@ -109,16 +110,38 @@ const TEST_LOCATIONS =
     ])
 
 @testset "TimeZoneFinder.jl" begin
-    @testset "basic" begin
-        @test timezone_at(52.5061, 13.358) == TimeZone("Europe/Berlin")
-        @test timezone_at(21.508, -78.215) == TimeZone("America/Havana")
-        @test timezone_at(50.5, 1.0) == TimeZone("Etc/GMT", TimeZones.Class(:LEGACY))
-        @test timezone_at(-89, 20) == TimeZone("Antarctica/McMurdo")
-    end
+    # We run all the tests twice. The first time they are run we ensure that we are
+    # generating a fresh binary cache file. The second time, we ensure that the in-memory
+    # Memoize cache is cleared, but read from the binary file.
 
-    @testset "known locations" begin
-        for location in TEST_LOCATIONS
-            @test timezone_at(location.latitude, location.longitude) == location.timezone
+    # Clear binary cache directory.
+    rm(TimeZoneFinder._scratch_dir(TimeZoneFinder.LATEST_RELEASE); recursive=true)
+
+    for read_from_cache in (false, true)
+        # Clear memoize cache.
+        empty!(memoize_cache(TimeZoneFinder.load_data))
+
+        if read_from_cache
+            # Ensure that binary cache exists if we expect to read from it.
+            @test isfile(TimeZoneFinder._cache_path(TimeZoneFinder.LATEST_RELEASE))
+        end
+
+        @testset "basic (read_from_cache=$read_from_cache)" begin
+            # Memoize cache should be empty
+            @test isempty(memoize_cache(TimeZoneFinder.load_data))
+            @test timezone_at(52.5061, 13.358) == TimeZone("Europe/Berlin")
+            # Memoize cache should now be populated
+            @test !isempty(memoize_cache(TimeZoneFinder.load_data))
+            @test timezone_at(21.508, -78.215) == TimeZone("America/Havana")
+            @test timezone_at(50.5, 1.0) == TimeZone("Etc/GMT", TimeZones.Class(:LEGACY))
+            @test timezone_at(-89, 20) == TimeZone("Antarctica/McMurdo")
+        end
+
+        @testset "known locations (read_from_cache=$read_from_cache)" begin
+            for location in TEST_LOCATIONS
+                @test timezone_at(location.latitude, location.longitude) ==
+                    location.timezone
+            end
         end
     end
 end

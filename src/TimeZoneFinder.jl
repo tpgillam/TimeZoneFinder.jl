@@ -11,6 +11,8 @@ using Scratch
 using Serialization
 using TimeZones
 
+const LATEST_RELEASE = "2021c"
+
 function _get_points(coord_list)::Vector{Point{2,Float64}}
     return [Point(Float64(x[1]), Float64(x[2])) for x in coord_list]
 end
@@ -123,7 +125,9 @@ Europe/Berlin (UTC+1/UTC+2)
 Returns a `TimeZone` instance if `latitude` and `longitude` correspond to a known timezone,
 otherwise `nothing` is returned.
 """
-function timezone_at(latitude::Real, longitude::Real; release::AbstractString="2021c")
+function timezone_at(
+    latitude::Real, longitude::Real; release::AbstractString=LATEST_RELEASE
+)
     data = load_data(release)
     p = Point{2,Float64}(longitude, latitude)
     # This is an unintelligent linear search through all polygons. There is much room for
