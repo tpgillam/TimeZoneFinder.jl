@@ -128,12 +128,20 @@ const TEST_LOCATIONS =
         @testset "basic (read_from_cache=$read_from_cache)" begin
             # Memoize cache should be empty
             @test isempty(memoize_cache(TimeZoneFinder.load_data))
+
             @test timezone_at(52.5061, 13.358) == TimeZone("Europe/Berlin")
+
             # Memoize cache should now be populated
             @test !isempty(memoize_cache(TimeZoneFinder.load_data))
+
             @test timezone_at(21.508, -78.215) == TimeZone("America/Havana")
             @test timezone_at(50.5, 1.0) == TimeZone("Etc/GMT", TimeZones.Class(:LEGACY))
             @test timezone_at(-89, 20) == TimeZone("Antarctica/McMurdo")
+
+            # Invalid locations shouldn't have a corresponding timezone.
+            @test isnothing(timezone_at(91, 0))
+            @test isnothing(timezone_at(0, 181))
+            @test isnothing(timezone_at(0, -181))
         end
 
         @testset "known locations (read_from_cache=$read_from_cache)" begin
