@@ -24,6 +24,7 @@ Etc/GMT (UTC+0)
 
 Please see the [documentation](https://tpgillam.github.io/TimeZoneFinder.jl/stable/) for further details.
 
-## Source
+## References
 
-The underlying data is sourced from [timezone-boundary-builder](https://github.com/evansiroky/timezone-boundary-builder), and used under the [Open Data Commons Open Database License (ODbL)](http://opendatacommons.org/licenses/odbl/).
+* The underlying data is sourced from [timezone-boundary-builder](https://github.com/evansiroky/timezone-boundary-builder), and used under the [Open Data Commons Open Database License (ODbL)](http://opendatacommons.org/licenses/odbl/).
+* The locations used in the tests are duplicated from [timezonefinder](https://github.com/jannikmi/timezonefinder), used under the MIT license.
