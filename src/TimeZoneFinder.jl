@@ -17,20 +17,39 @@ function _get_points(coord_list)::Vector{Point{2,Float64}}
     return [Point(Float64(x[1]), Float64(x[2])) for x in coord_list]
 end
 
-function _get_polygon(coordinates)
+function _get_polyarea(coordinates)
     exterior = _get_points(first(coordinates))
     interiors = map(_get_points, coordinates[2:end])
     return PolyArea(exterior, interiors)
 end
 
-function _get_shape(geometry)
+function _get_polyareas(geometry)
     return if geometry[:type] == "Polygon"
-        _get_polygon(geometry[:coordinates])
+        [_get_polyarea(geometry[:coordinates])]
     elseif geometry[:type] == "MultiPolygon"
-        map(_get_polygon, geometry[:coordinates])
+        map(_get_polyarea, geometry[:coordinates])
     else
         throw(ArgumentError("Unknown geometry type $(geometry[:type])"))
     end
+end
+
+"""
+    BoundedPolyArea(poly::PolyArea)
+
+A `PolyArea` which also stores its axis-aligned bounding box, used to accelerate `Base.in`.
+"""
+struct BoundedPolyArea{P<:PolyArea,B<:Box}
+    polyarea::P
+    bounding_box::B
+    function BoundedPolyArea(polyarea::PolyArea)
+        bbox = boundingbox(polyarea)
+        return new{typeof(polyarea),typeof(bbox)}(polyarea, bbox)
+    end
+end
+
+function Base.in(point::Point, bpa::BoundedPolyArea)
+    in(point, bpa.bounding_box) || return false
+    return in(point, bpa.polyarea)
 end
 
 """
@@ -48,15 +67,10 @@ function generate_data(release::AbstractString)
         # Note: Etc/<Stuff> timezones count as LEGACY timezones. These are used in the
         #   oceans, so for these purposes we allow them.
         tz = TimeZone(feature[:properties][:tzid], TimeZones.Class(:ALL))
-        shape = _get_shape(feature[:geometry])
-        if isa(shape, PolyArea)
-            push!(shapes, shape)
+        polygons = _get_polyareas(feature[:geometry])
+        for poly in polygons
+            push!(shapes, BoundedPolyArea(poly))
             push!(tzs, tz)
-        else
-            for poly in shape
-                push!(shapes, poly)
-                push!(tzs, tz)
-            end
         end
     end
 
@@ -113,7 +127,7 @@ Julia process.
 end
 
 """
-    timezone_at(latitude, longitude; release="2021c")
+    timezone_at(latitude, longitude; release=LATEST_RELEASE)
 
 Get the timezone at the given `latitude` and `longitude`.
 
@@ -121,6 +135,11 @@ Get the timezone at the given `latitude` and `longitude`.
 julia> timezone_at(52.5061, 13.358)
 Europe/Berlin (UTC+1/UTC+2)
 ```
+
+The optional `release` argument can be used to specify a different version of the
+[timezone-boundary-builder](https://github.com/evansiroky/timezone-boundary-builder) dataset
+to use. By default the latest release will be used, which will be the desired setting for
+common use.
 
 Returns a `TimeZone` instance if `latitude` and `longitude` correspond to a known timezone,
 otherwise `nothing` is returned.

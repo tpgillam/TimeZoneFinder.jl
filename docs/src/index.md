@@ -4,24 +4,37 @@ Documentation for [TimeZoneFinder](https://github.com/tpgillam/TimeZoneFinder.jl
 
 ## API
 
-```@autodocs
-Modules = [TimeZoneFinder]
+```@docs
+timezone_at
 ```
 
 ## Implementation details
 
+### Artifact
+
 This module is based upon OpenStreetMap data, which has been compiled into shape files by [timezone-boundary-builder](https://github.com/evansiroky/timezone-boundary-builder).
-We define an [Artifact](https://pkgdocs.julialang.org/v1/artifacts/) for each release (since `2021c`) of these shape files.
+We define an [Artifact](https://pkgdocs.julialang.org/v1/artifacts/) for each release (since `2021c`) of these raw JSON shape files.
+
+When a new upstream release is made, a new artifact will be created by a package maintainer.
+Refer to the [artifact_build](https://github.com/tpgillam/TimeZoneFinder.jl/tree/main/artifact_build) directory for a helper script.
+
+### Parsed cache
 
 This raw data is provided in JSON format, so the first time a package uses it, it is parsed (which can take tens of seconds).
 Subsequently, a [serialized](https://docs.julialang.org/en/v1/stdlib/Serialization/) binary version in a [scratch space](https://github.com/JuliaPackaging/Scratch.jl) is loaded, which is much faster.
 This cache is re-used so long as the package and Julia versions remain the same.
 After an upgrade the cache will be re-generated, which can cause a one-off latency of a few tens of seconds.
 
-## Caveats
+### Parsed format
 
-The current implementation aims to be simple, however there is scope for further optimisation.
+The parsed data contains multiple (about 1000) polygons, each with a correpsonding time-zone.
+Each polygon is stored as a [`PolyArea`](https://juliageometry.github.io/Meshes.jl/stable/geometries/polytopes.html#Meshes.PolyArea) along with its [axis-aligned bounding box](https://juliageometry.github.io/Meshes.jl/stable/algorithms/boundingbox.html#Bounding-box).
+This bounding box is used to speed up checks for containment.
 
-Finding a timezone currently involves a linear scan over a list of about 1000 polygons.
-For each polygon, which may have tens of thousands of line segments, we perform a containment check for the point.
-This could be made significantly more performant by adding an appropriate spatial index over the polygons, which would reduce the number of polygons that have to be checked.
+### Lookup
+
+Given a `(latitude, longitude)` point, we perform a linear scan over all polygons.
+For each polygon we check for containment, using the bounding box to quickly dismiss polygons that are far away.
+
+!!! note
+    In the future, performance might be improved further by building a more fine-grained spatial index.

@@ -4,7 +4,7 @@ using Pkg.Artifacts
 using SHA
 using Tar
 
-# This assumes that `unzip` and `tar` commands are available on the command line.
+# This script assumes that the `unzip` command is available on the command line.
 
 release = "2021c"
 
@@ -38,8 +38,7 @@ tarball_url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/$
         "Artifacts.toml should be edited accordingly."
 )
 
-# Bind artifact to an Artifacts.toml file in the current directory; this file can
-# be used by others to download and use your newly-created Artifact!
+# Bind artifact to an Artifacts.toml file in the package directory.
 bind_artifact!(
     joinpath(@__DIR__, "../Artifacts.toml"),
     artifact_name,
