@@ -1,7 +1,31 @@
 [timezone-boundary-builder-2021c]
 git-tree-sha1 = "6418fde407d1c917005a96b9615ba4758ef170cb"
-lazy = false
+lazy = true
 
     [[timezone-boundary-builder-2021c.download]]
     sha256 = "297ff27da3e50b1f2b1bcb75009ed1d8aac616fec56ff1ac081021b610017d0d"
     url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/timezone-boundary-builder-2021c/timezone-boundary-builder-2021c.tar.gz"
+
+[timezone-boundary-builder-2022b]
+git-tree-sha1 = "fe7eee9ec0f981eb34fd268e17150273d1442dac"
+lazy = true
+
+    [[timezone-boundary-builder-2022b.download]]
+    sha256 = "7abdf814632a20399bcc688de3e69a38e0c9f6d3b08d67f5584caa27cf5cb86b"
+    url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/timezone-boundary-builder-2022b/timezone-boundary-builder-2022b.tar.gz"
+
+[timezone-boundary-builder-2022d]
+git-tree-sha1 = "928337e2a168ac0efbde0f95e414dc991c741e95"
+lazy = true
+
+    [[timezone-boundary-builder-2022d.download]]
+    sha256 = "2d4affa97700cbeae9d6166a225ec899dc4896c1ff32fe35a916cecf7dfcda08"
+    url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/timezone-boundary-builder-2022d/timezone-boundary-builder-2022d.tar.gz"
+
+[timezone-boundary-builder-2022f]
+git-tree-sha1 = "651b8f30bc4a601937df84d2d9c8f1029dcd47e6"
+lazy = false
+
+    [[timezone-boundary-builder-2022f.download]]
+    sha256 = "50a41b7f574d12429e5591a3583777a38434395af1e9dd6ee28bef019a841fff"
+    url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/timezone-boundary-builder-2022f/timezone-boundary-builder-2022f.tar.gz"
