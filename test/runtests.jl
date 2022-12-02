@@ -30,6 +30,33 @@ function Location(latitude::Real, longitude::Real, timezone::AbstractString)
 end
 Location(args::Tuple) = Location(args...)
 
+"""
+    tzdata_context(f, version)
+
+Run all code in `f` in the context of tzdata `version`.
+
+!!! warning
+    The `@tz_str` macro should NOT be used inside this context, since it works by obtaining
+    the TimeZone at parse time. This means that we are not necessarily using the correct
+    version.
+
+    Instead, one should always call `TimeZone` directly.
+"""
+function tzdata_context(f::Function, version::AbstractString)
+    return try
+        withenv("JULIA_TZ_VERSION" => version) do
+            # We need to re-build TimeZones to ensure that we use the correct version.
+            @assert TimeZones.TZData.tzdata_version() == version
+            TimeZones.build()
+            f()
+        end
+    finally
+        # At this point the version should have been re-set. We must re-build the
+        # TimeZones library to use this other version.
+        TimeZones.build()
+    end
+end
+
 # These test locations are duplicated from https://github.com/jannikmi/timezonefinder
 # under the MIT license.
 const TEST_LOCATIONS =
