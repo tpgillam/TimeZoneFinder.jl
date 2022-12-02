@@ -11,7 +11,7 @@ using Scratch
 using Serialization
 using TimeZones
 
-const LATEST_RELEASE = "2021c"
+const LATEST_RELEASE = "2022f"
 
 function _get_points(coord_list)::Vector{Point{2,Float64}}
     return [Point(Float64(x[1]), Float64(x[2])) for x in coord_list]

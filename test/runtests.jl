@@ -43,7 +43,7 @@ const TEST_LOCATIONS =
         (34.104255, -118.4055591, "Los Angeles", "America/Los_Angeles"),
         (55.743749, 37.6207923, "Moscow", "Europe/Moscow"),
         (39.194991, -106.8294024, "Aspen, Colorado", "America/Denver"),
-        (50.438114, 30.5179595, "Kiev", "Europe/Kiev"),
+        (50.438114, 30.5179595, "Kyiv", "Europe/Kyiv"),
         (12.936873, 77.6909136, "Jogupalya", "Asia/Kolkata"),
         (38.889144, -77.0398235, "Washington DC", "America/New_York"),
         (19, -135, "pacific ocean", "Etc/GMT+9"),
@@ -136,7 +136,8 @@ const TEST_LOCATIONS =
 
             @test timezone_at(21.508, -78.215) == TimeZone("America/Havana")
             @test timezone_at(50.5, 1.0) == TimeZone("Etc/GMT", TimeZones.Class(:LEGACY))
-            @test timezone_at(-89, 20) == TimeZone("Antarctica/McMurdo")
+            @test timezone_at(-89, 20) ==
+                TimeZone("Antarctica/McMurdo", TimeZones.Class(:LEGACY))
 
             # Invalid locations shouldn't have a corresponding timezone.
             @test isnothing(timezone_at(91, 0))
