@@ -2,6 +2,7 @@ using Memoize
 using Test
 using TimeZoneFinder
 using TimeZones
+using TimeZones.TZData: tzdata_version
 
 """
     Location
@@ -142,14 +143,14 @@ const TEST_LOCATIONS =
     # Memoize cache is cleared, but read from the binary file.
 
     # Clear binary cache directory.
-    rm(TimeZoneFinder._scratch_dir(TimeZoneFinder.LATEST_RELEASE); recursive=true)
+    rm(TimeZoneFinder._scratch_dir(tzdata_version()); recursive=true)
 
     for read_from_cache in (false, true)
         # Clear memoize cache.
         empty!(memoize_cache(TimeZoneFinder.load_data))
 
         # Ensure that binary cache either exists or doesn't exist as we expect.
-        cache_path = TimeZoneFinder._cache_path(TimeZoneFinder.LATEST_RELEASE)
+        cache_path = TimeZoneFinder._cache_path(tzdata_version())
         @test read_from_cache == isfile(cache_path)
 
         @testset "basic (read_from_cache=$read_from_cache)" begin
