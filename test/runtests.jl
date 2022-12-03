@@ -139,8 +139,8 @@ const TEST_LOCATIONS =
 
 @testset "TimeZoneFinder.jl" begin
     # We run all the tests twice. The first time they are run we ensure that we are
-    # generating a fresh binary cache file. The second time, we ensure that the in-memory
-    # Memoize cache is cleared, but read from the binary file.
+    # generating a fresh binary cache file. The second time, we ensure that the
+    # in-memory Memoize cache is cleared, but read from the binary file.
 
     # Clear binary cache directory.
     rm(TimeZoneFinder._scratch_dir(tzdata_version()); recursive=true)
@@ -178,6 +178,23 @@ const TEST_LOCATIONS =
                 @test timezone_at(location.latitude, location.longitude) ==
                     location.timezone
             end
+        end
+    end
+
+    @testset "old tzdata versions" begin
+        # Run for several tzdata versions that we should be able to support.
+        for version in ["2021c", "2022d", "2022f"]
+            tzdata_context(version) do
+                @test timezone_at(52.5061, 13.358) == TimeZone("Europe/Berlin")
+            end
+        end
+
+        # We can verify that certain things change as expected over time.
+        tzdata_context("2021c") do
+            @test timezone_at(50.438114, 30.5179595) == TimeZone("Europe/Kiev")
+        end
+        tzdata_context("2022b") do
+            @test timezone_at(50.438114, 30.5179595) == TimeZone("Europe/Kyiv")
         end
     end
 end
