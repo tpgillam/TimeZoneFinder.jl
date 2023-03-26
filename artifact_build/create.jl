@@ -6,7 +6,7 @@ using Tar
 
 # This script assumes that the `unzip` command is available on the command line.
 
-release = "2022g"
+release = "2023b"
 
 # This is the name of the artifact that we're creating.
 artifact_name = "timezone-boundary-builder-$release"
