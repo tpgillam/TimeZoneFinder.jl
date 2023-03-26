@@ -37,3 +37,11 @@ lazy = true
     [[timezone-boundary-builder-2022g.download]]
     sha256 = "c9f558d204071aa28202a3c9a613e0b20e09a951ce879825030e892bcc2c37b7"
     url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/timezone-boundary-builder-2022g/timezone-boundary-builder-2022g.tar.gz"
+
+[timezone-boundary-builder-2023b]
+git-tree-sha1 = "062c3da562b49ed8cebb528ed29582f3f52aa17f"
+lazy = true
+
+    [[timezone-boundary-builder-2023b.download]]
+    sha256 = "0883cafe32408169d29a3fe3c57da3e185b40e1b20e783fc7924e249f481d9cf"
+    url = "https://github.com/tpgillam/TimeZoneFinder.jl/releases/download/timezone-boundary-builder-2023b/timezone-boundary-builder-2023b.tar.gz"
