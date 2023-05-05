@@ -137,7 +137,6 @@ function _get_boundary_builder_versions()
     return sort!([last(split(name, "-")) for name in keys(toml)])
 end
 
-
 """
     _timezone_boundary_builder_version()
     _timezone_boundary_builder_version(tzdata_version)
