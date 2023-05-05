@@ -7,6 +7,7 @@ using LazyArtifacts
 using Memoize
 using Meshes
 using Pkg.TOML
+using PrecompileTools
 using Scratch
 using Serialization
 using TimeZones
@@ -197,5 +198,8 @@ function timezone_at(latitude::Real, longitude::Real)
     isnothing(i) && return nothing
     return data.tzs[i]
 end
+
+# Precompile the primary API.
+@compile_workload timezone_at(1.0, 1.0)
 
 end
