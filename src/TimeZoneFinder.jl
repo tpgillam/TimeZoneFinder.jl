@@ -84,6 +84,7 @@ end
     _scratch_dir(version)
 
 Get the scratch directory path in which the serialized mapping data will be kept.
+`version` here refers to the version of the boundary data.
 """
 function _scratch_dir(version::AbstractString)
     # The scratch directory should be different for different package versions, since we
@@ -125,6 +126,42 @@ Julia process.
 end
 
 """
+    _get_boundary_builder_versions()
+
+Get a list of versions for we have boundary data. Will be e.g. `["2022a", "2023b"]`.
+
+The list will be sorted in order of increasing versions.
+"""
+function _get_boundary_builder_versions()
+    toml = TOML.parsefile(find_artifacts_toml(@__FILE__))
+    return sort!([last(split(name, "-")) for name in keys(toml)])
+end
+
+"""
+    _timezone_boundary_builder_version()
+    _timezone_boundary_builder_version(tzdata_version)
+
+Get the version of timezone-boundary-builder data that we should use.
+
+If no arguments are provided, the `tzdata_version` is determined by that currently in use by
+the `TimeZones` package. The map from tzdata version -> boundary version is memoized.
+
+This is determined by the rules in the "note" in the docstring for `timezone_at`.
+"""
+@memoize function _timezone_boundary_builder_version(tzdata_version::AbstractString)
+    boundary_builder_versions = _get_boundary_builder_versions()
+
+    i = searchsortedlast(boundary_builder_versions, tzdata_version)
+    iszero(i) && throw(ArgumentError("No boundary data available for $tzdata_version"))
+    return boundary_builder_versions[i]
+end
+
+function _timezone_boundary_builder_version()
+    tzdata_version = TimeZones.TZData.tzdata_version()
+    return _timezone_boundary_builder_version(tzdata_version)
+end
+
+"""
     timezone_at(latitude, longitude)
 
 Get the timezone at the given `latitude` and `longitude`.
@@ -135,13 +172,23 @@ Europe/Berlin (UTC+1/UTC+2)
 ```
 
 !!! note
-    The library always uses the same version of tzdata currently used by `TimeZones`.
+    The library will use a version of the timezone-boundary-builder data that is compatible
+    with the version of tzdata currently used by `TimeZones`.
+
+    Nominally this will be the _same_ version as is used by `TimeZones`, but in some cases
+    an older version might be used.
+
+    There are two possible reasons for this:
+
+        1. There were no boundary changes in a tzdata release, which means that there will
+            never be a boundary release for this particular version.
+        2. The boundary dataset is not yet available for a new tzdata release.
 
 Returns a `TimeZone` instance if `latitude` and `longitude` correspond to a known timezone,
 otherwise `nothing` is returned.
 """
 function timezone_at(latitude::Real, longitude::Real)
-    version = TimeZones.TZData.tzdata_version()
+    version = _timezone_boundary_builder_version()
     data = load_data(version)
     p = Point{2,Float64}(longitude, latitude)
     # This is an unintelligent linear search through all polygons. There is much room for
