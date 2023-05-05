@@ -24,7 +24,7 @@ lazy = true
 
 [timezone-boundary-builder-2022f]
 git-tree-sha1 = "651b8f30bc4a601937df84d2d9c8f1029dcd47e6"
-lazy = false
+lazy = true
 
     [[timezone-boundary-builder-2022f.download]]
     sha256 = "50a41b7f574d12429e5591a3583777a38434395af1e9dd6ee28bef019a841fff"
@@ -40,7 +40,7 @@ lazy = true
 
 [timezone-boundary-builder-2023b]
 git-tree-sha1 = "062c3da562b49ed8cebb528ed29582f3f52aa17f"
-lazy = true
+lazy = false
 
     [[timezone-boundary-builder-2023b.download]]
     sha256 = "0883cafe32408169d29a3fe3c57da3e185b40e1b20e783fc7924e249f481d9cf"
