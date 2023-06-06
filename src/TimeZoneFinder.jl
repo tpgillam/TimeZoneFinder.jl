@@ -1,6 +1,6 @@
 module TimeZoneFinder
 
-export timezone_at
+export timezone_at, timezones_at
 
 using JSON3
 using LazyArtifacts
@@ -147,7 +147,7 @@ Get the version of timezone-boundary-builder data that we should use.
 If no arguments are provided, the `tzdata_version` is determined by that currently in use by
 the `TimeZones` package. The map from tzdata version -> boundary version is memoized.
 
-This is determined by the rules in the "note" in the docstring for `timezone_at`.
+This is determined by the rules in the "note" in the docstring for [`timezone_at`](@ref).
 """
 @memoize function _timezone_boundary_builder_version(tzdata_version::AbstractString)
     boundary_builder_versions = _get_boundary_builder_versions()
@@ -163,13 +163,22 @@ function _timezone_boundary_builder_version()
 end
 
 """
-    timezone_at(latitude, longitude)
+    timezones_at(latitude, longitude)
 
-Get the timezone at the given `latitude` and `longitude`.
+Get the timezones used at the given `latitude` and `longitude`.
+
+If no timezones are known, then an empty list will be returned. Conversely, if the
+co-ordinates land in a disputed region, all applicable timezones will be returned.
 
 ```jldoctest
-julia> timezone_at(52.5061, 13.358)
-Europe/Berlin (UTC+1/UTC+2)
+julia> timezones_at(52.5061, 13.358)
+1-element Vector{Dates.TimeZone}:
+ Europe/Berlin (UTC+1/UTC+2)
+
+julia> timezones_at(69.8, -141)
+2-element Vector{Dates.TimeZone}:
+ America/Anchorage (UTC-9/UTC-8)
+ America/Dawson (UTC-7)
 ```
 
 !!! note
@@ -184,19 +193,44 @@ Europe/Berlin (UTC+1/UTC+2)
         1. There were no boundary changes in a tzdata release, which means that there will
             never be a boundary release for this particular version.
         2. The boundary dataset is not yet available for a new tzdata release.
-
-Returns a `TimeZone` instance if `latitude` and `longitude` correspond to a known timezone,
-otherwise `nothing` is returned.
 """
-function timezone_at(latitude::Real, longitude::Real)
+function timezones_at(latitude, longitude)
     version = _timezone_boundary_builder_version()
     data = load_data(version)
     p = Point{2,Float64}(longitude, latitude)
     # This is an unintelligent linear search through all polygons. There is much room for
     # improvement by building a spatial index.
-    i = findfirst(shape -> in(p, shape), data.shapes)
-    isnothing(i) && return nothing
-    return data.tzs[i]
+    is = findall(shape -> in(p, shape), data.shapes)
+    return data.tzs[is]
+end
+
+"""
+    timezone_at(latitude, longitude)
+
+Get any uniquely applicable timezone at the given `latitude` and `longitude`.
+
+```jldoctest
+julia> timezone_at(52.5061, 13.358)
+Europe/Berlin (UTC+1/UTC+2)
+```
+
+See additional note on docstring for [`timezone_at`](@ref) regarding the version of tzdata
+that will be used.
+
+# Returns
+- a `TimeZone` instance if `latitude` and `longitude` correspond to a unqiue timezone.
+- `nothing` if no timezone is found.
+
+An exception is raised if multiple timezones correspond to this location - use
+[`timezones_at`](@ref) to obtain all the matches.
+"""
+function timezone_at(latitude::Real, longitude::Real)
+    tzs = timezones_at(latitude, longitude)
+    isempty(tzs) && return nothing
+    if length(tzs) > 1
+        throw(ArgumentError("Found multiple timezones: $tzs at ($latitude, $longitude)"))
+    end
+    return only(tzs)
 end
 
 # Precompile the primary API.
