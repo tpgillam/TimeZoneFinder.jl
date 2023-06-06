@@ -5,6 +5,7 @@ Documentation for [TimeZoneFinder](https://github.com/tpgillam/TimeZoneFinder.jl
 ## API
 
 ```@docs
+timezones_at
 timezone_at
 ```
 

@@ -158,6 +158,7 @@ const TEST_LOCATIONS =
             @test isempty(memoize_cache(TimeZoneFinder.load_data))
 
             @test timezone_at(52.5061, 13.358) == TimeZone("Europe/Berlin")
+            @test timezones_at(52.5061, 13.358) == [TimeZone("Europe/Berlin")]
 
             # Memoize cache should now be populated
             @test !isempty(memoize_cache(TimeZoneFinder.load_data))
@@ -171,6 +172,9 @@ const TEST_LOCATIONS =
             @test isnothing(timezone_at(91, 0))
             @test isnothing(timezone_at(0, 181))
             @test isnothing(timezone_at(0, -181))
+            @test isempty(timezones_at(91, 0))
+            @test isempty(timezones_at(0, 181))
+            @test isempty(timezones_at(0, -181))
         end
 
         @testset "known locations (read_from_cache=$read_from_cache)" begin
@@ -178,6 +182,15 @@ const TEST_LOCATIONS =
                 @test timezone_at(location.latitude, location.longitude) ==
                     location.timezone
             end
+        end
+
+        @testset "multiple timezones (read_from_cache=$read_from_cache)" begin
+            # This is the disputed Beaufort sea region.
+            # Taken from timezone-boundary-builder. Full list of expected overlaps are here:
+            #   https://github.com/evansiroky/timezone-boundary-builder/blob/master/expectedZoneOverlaps.json
+            @test timezones_at(69.8, -141) ==
+                [TimeZone("America/Anchorage"), TimeZone("America/Dawson")]
+            @test_throws ArgumentError timezone_at(69.8, -141)
         end
     end
 
