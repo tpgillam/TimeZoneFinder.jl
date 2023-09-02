@@ -17,7 +17,7 @@ TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 [compat]
 JSON3 = "1"
 Memoize = "0.4"
-Meshes = "0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29"
+Meshes = "0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.35"
 PrecompileTools = "1"
 Scratch = "1"
 TimeZones = "1.8"
