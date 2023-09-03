@@ -44,17 +44,18 @@ Run all code in `f` in the context of tzdata `version`.
     Instead, one should always call `TimeZone` directly.
 """
 function tzdata_context(f::Function, version::AbstractString)
+    old_version = TimeZones.TZData.tzdata_version()
     return try
         withenv("JULIA_TZ_VERSION" => version) do
             # We need to re-build TimeZones to ensure that we use the correct version.
             @assert TimeZones.TZData.tzdata_version() == version
-            TimeZones.build()
+            TimeZones.build(version)
             f()
         end
     finally
         # At this point the version should have been re-set. We must re-build the
         # TimeZones library to use this other version.
-        TimeZones.build()
+        TimeZones.build(old_version)
     end
 end
 
