@@ -18,7 +18,6 @@ makedocs(;
         "Home" => "index.md",
     ],
     checkdocs=:exports,
-    strict=true,
 )
 
 deploydocs(;
