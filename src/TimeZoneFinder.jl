@@ -12,14 +12,35 @@ using Scratch
 using Serialization
 using TimeZones
 
-function _get_points(coord_list)::Vector{Point{2,Float64}}
-    return [Point(Float64(x[1]), Float64(x[2])) for x in coord_list]
+"""Get points that form a closed loop.
+
+The last point that is returned is assumed to be connected back to the first; it is expected
+that in `coord_list` it will actually be repeated.
+"""
+function _get_ring_points(coord_list)::Vector{Point{2,Float64}}
+    # In the co-ordinate list, the first and last points _should_ be the same. We verify
+    # that this is the case.
+    first(coord_list) == last(coord_list) || throw(ArgumentError("Curve is not closed!"))
+
+    return [Point(Float64(x[1]), Float64(x[2])) for x in coord_list[1:(end - 1)]]
 end
 
 function _get_polyarea(coordinates)
-    exterior = _get_points(first(coordinates))
-    interiors = map(_get_points, coordinates[2:end])
-    return PolyArea(exterior, interiors)
+    exterior = _get_ring_points(first(coordinates))
+    interiors = map(_get_ring_points, coordinates[2:end])
+
+    return if hasmethod(
+        PolyArea, Tuple{AbstractVector{Point},AbstractVector{Point},AbstractVector{Point}}
+    )
+        PolyArea(exterior, interiors...)
+    else
+        # This branch supports versions of Meshes.jl <0.35.
+        # We want to support 0.32 for a while, because this is the newest version that
+        # supports Julia 1.6. Later versions only support Julia 1.9. At some point we will
+        # delete all this and move to >=1.9; hopefully we can hold out until another LTS is
+        # released.
+        PolyArea(exterior, interiors)
+    end
 end
 
 function _get_polyareas(geometry)

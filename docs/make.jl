@@ -14,14 +14,8 @@ makedocs(;
         edit_link="main",
         assets=String[],
     ),
-    pages=[
-        "Home" => "index.md",
-    ],
+    pages=["Home" => "index.md"],
     checkdocs=:exports,
-    strict=true,
 )
 
-deploydocs(;
-    repo="github.com/tpgillam/TimeZoneFinder.jl",
-    devbranch="main",
-)
+deploydocs(; repo="github.com/tpgillam/TimeZoneFinder.jl", devbranch="main")
