@@ -12,14 +12,25 @@ using Scratch
 using Serialization
 using TimeZones
 
-function _get_points(coord_list)::Vector{Point{2,Float64}}
-    return [Point(Float64(x[1]), Float64(x[2])) for x in coord_list]
+"""Get points that form a closed loop.
+
+The last point that is returned is assumed to be connected back to the first; it is expected
+that in `coord_list` it will actually be repeated.
+"""
+function _get_ring_points(coord_list)::Vector{Point{2,Float64}}
+    # In the co-ordinate list, the first and last points _should_ be the same. We verify
+    # that this is the case.
+    if first(coord_list) != last(coord_list)
+        throw(ArgumentError("First and last points do not match!"))
+    end
+
+    return [Point(Float64(x[1]), Float64(x[2])) for x in coord_list[1:(end - 1)]]
 end
 
 function _get_polyarea(coordinates)
-    exterior = _get_points(first(coordinates))
-    interiors = map(_get_points, coordinates[2:end])
-    return PolyArea(exterior, interiors)
+    exterior = _get_ring_points(first(coordinates))
+    interiors = map(_get_ring_points, coordinates[2:end])
+    return PolyArea(exterior, interiors...)
 end
 
 function _get_polyareas(geometry)
