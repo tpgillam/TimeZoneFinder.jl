@@ -30,7 +30,19 @@ end
 function _get_polyarea(coordinates)
     exterior = _get_ring_points(first(coordinates))
     interiors = map(_get_ring_points, coordinates[2:end])
-    return PolyArea(exterior, interiors...)
+
+    return if hasmethod(
+        PolyArea, Tuple{AbstractVector{Point},AbstractVector{Point},AbstractVector{Point}}
+    )
+        PolyArea(exterior, interiors...)
+    else
+        # This branch supports versions of Meshes.jl <0.35.
+        # We want to support 0.32 for a while, because this is the newest version that
+        # supports Julia 1.6. Later versions only support Julia 1.9. At some point we will
+        # delete all this and move to >=1.9; hopefully we can hold out until another LTS is
+        # released.
+        PolyArea(exterior, interiors)
+    end
 end
 
 function _get_polyareas(geometry)
