@@ -20,9 +20,7 @@ that in `coord_list` it will actually be repeated.
 function _get_ring_points(coord_list)::Vector{Point{2,Float64}}
     # In the co-ordinate list, the first and last points _should_ be the same. We verify
     # that this is the case.
-    if first(coord_list) != last(coord_list)
-        throw(ArgumentError("First and last points do not match!"))
-    end
+    first(coord_list) == last(coord_list) || throw(ArgumentError("Curve is not closed!"))
 
     return [Point(Float64(x[1]), Float64(x[2])) for x in coord_list[1:(end - 1)]]
 end
