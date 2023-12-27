@@ -53,7 +53,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build docs
-        shell: julia --color=yes --project=docs -e {0}
+        shell: julia --color=yes --project=docs {0}
         run: |
           using Documenter: DocMeta, doctest
           using TimeZoneFinder
