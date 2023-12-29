@@ -3,12 +3,12 @@ module TimeZoneFinder
 export timezone_at, timezones_at
 
 using Downloads: download
+using GitHub
 using JSON3
 using Memoize
 using Meshes
 using Pkg.Artifacts
 using Pkg.TOML
-using PrecompileTools
 using Scratch
 using Serialization
 using TimeZones
@@ -116,7 +116,10 @@ function _get_artifact_path(version::AbstractString)
         end
     end
 
-    bind_artifact!(artifacts_toml, artifact_name, hash)
+    # We are happy to overwrite any existing mapping; this means that we set
+    # `force` to be true. (Otherwise we would fail here if e.g. the artifacts
+    # directory had been emptied).
+    bind_artifact!(artifacts_toml, artifact_name, hash; force=true)
     return artifact_path(hash)
 end
 
@@ -197,29 +200,17 @@ end
 """
     _get_boundary_builder_versions()
 
-Get a list of versions for we have boundary data. Will be e.g. `["2022a", "2023b"]`.
+Get a list of versions for we have boundary data. 
 
-The list will be sorted in order of increasing versions.
+Will be e.g. `["2022a", "2023b"]`. The list will be sorted in order of increasing versions.
 """
-function _get_boundary_builder_versions()
-    # TODO: There are some older versions, but these provide a differently named
+@memoize function _get_boundary_builder_versions()
+    # TODO: There are some older versions than 2018d (back to 2016d), but these provide a differently named
     #   zip file. We could aim to support these if there is demand.
-    return [
-        "2018d",
-        "2018g",
-        "2018i",
-        "2019a",
-        "2019b",
-        "2020a",
-        "2020d",
-        "2021c",
-        "2022b",
-        "2022d",
-        "2022f",
-        "2022g",
-        "2023b",
-        "2023d",
-    ]
+    return sort([
+        r.tag_name for
+        r in releases("evansiroky/timezone-boundary-builder")[1] if r.tag_name >= "2018d"
+    ])
 end
 
 """
@@ -233,7 +224,7 @@ the `TimeZones` package. The map from tzdata version -> boundary version is memo
 
 This is determined by the rules in the "note" in the docstring for [`timezone_at`](@ref).
 """
-@memoize function _timezone_boundary_builder_version(tzdata_version::AbstractString)
+function _timezone_boundary_builder_version(tzdata_version::AbstractString)
     boundary_builder_versions = _get_boundary_builder_versions()
 
     i = searchsortedlast(boundary_builder_versions, tzdata_version)
@@ -316,8 +307,5 @@ function timezone_at(latitude::Real, longitude::Real)
     end
     return only(tzs)
 end
-
-# Precompile the primary API.
-@compile_workload timezone_at(1.0, 1.0)
 
 end
