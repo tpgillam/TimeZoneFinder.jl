@@ -1,7 +1,7 @@
 using Memoize
 using Test
 using TimeZoneFinder
-using TimeZoneFinder: _timezone_boundary_builder_version
+using TimeZoneFinder: _get_boundary_builder_versions, _timezone_boundary_builder_version
 using TimeZones
 
 """
@@ -210,5 +210,12 @@ const TEST_LOCATIONS =
         tzdata_context("2022b") do
             @test timezone_at(50.438114, 30.5179595) == TimeZone("Europe/Kyiv")
         end
+    end
+
+    @testset "_get_boundary_builder_versions" begin
+        versions = _get_boundary_builder_versions()
+        @test sort(versions) == versions
+        @test versions[1] == "2018d"
+        @test length(versions) >= 10
     end
 end

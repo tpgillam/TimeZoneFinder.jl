@@ -3,7 +3,6 @@ module TimeZoneFinder
 export timezone_at, timezones_at
 
 using Downloads: download
-using GitHub
 using JSON3
 using Memoize
 using Meshes
@@ -197,6 +196,25 @@ Julia process.
     end
 end
 
+function _read_gh_api_paginated(url::AbstractString, per_page::Int64, page::Int64)
+    return JSON3.read(
+        take!(download("$(url)?per_page=$(per_page)&page=$(page)", IOBuffer()))
+    )
+end
+
+function _read_gh_api_paginated(url::AbstractString)
+    responses = []
+    # TODO: This is the maximum per-page limit, at least for the "releases" command
+    per_page = 100
+    page = 1
+    while isempty(responses) || length(responses[end]) > 0
+        response = _read_gh_api_paginated(url, per_page, page)
+        push!(responses, response)
+        page += 1
+    end
+    return reduce(vcat, responses)
+end
+
 """
     _get_boundary_builder_versions()
 
@@ -207,10 +225,13 @@ Will be e.g. `["2022a", "2023b"]`. The list will be sorted in order of increasin
 @memoize function _get_boundary_builder_versions()
     # TODO: There are some older versions than 2018d (back to 2016d), but these provide a differently named
     #   zip file. We could aim to support these if there is demand.
-    return sort([
-        r.tag_name for
-        r in releases("evansiroky/timezone-boundary-builder")[1] if r.tag_name >= "2018d"
-    ])
+
+    # NOTE: we are doing this manually to avoid a moderately heavy dependency on GitHub.jl
+    release_data = _read_gh_api_paginated(
+        "https://api.github.com/repos/evansiroky/timezone-boundary-builder/releases"
+    )
+    all_tags = [x[:tag_name] for x in release_data]
+    return sort(filter(tag -> tag >= "2018d", all_tags))
 end
 
 """
