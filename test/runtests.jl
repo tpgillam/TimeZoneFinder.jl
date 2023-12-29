@@ -197,7 +197,7 @@ const TEST_LOCATIONS =
 
     @testset "old tzdata versions" begin
         # Run for several tzdata versions that we should be able to support.
-        for version in ["2021c", "2022d", "2022f"]
+        for version in ["2018d", "2021c", "2022d", "2022f"]
             tzdata_context(version) do
                 @test timezone_at(52.5061, 13.358) == TimeZone("Europe/Berlin")
             end

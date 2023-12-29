@@ -2,15 +2,17 @@ module TimeZoneFinder
 
 export timezone_at, timezones_at
 
+using Downloads: download
 using JSON3
-using LazyArtifacts
 using Memoize
 using Meshes
+using Pkg.Artifacts
 using Pkg.TOML
 using PrecompileTools
 using Scratch
 using Serialization
 using TimeZones
+using ZipArchives: ZipBufferReader, zip_names, zip_openentry
 
 """Get points that form a closed loop.
 
@@ -73,11 +75,56 @@ function Base.in(point::Point, bpa::BoundedPolyArea)
 end
 
 """
+    _get_artifact_path(version) -> String
+
+Get the path to the artifact for `version`, e.g. "2023b".
+
+This will download the necessary data if it doesn't already exist.
+"""
+function _get_artifact_path(version::AbstractString)
+    artifacts_toml = joinpath(dirname(@__DIR__), "Artifacts.toml")
+    artifact_name = "timezone-boundary-builder-$version"
+    hash = artifact_hash(artifact_name, artifacts_toml)
+
+    if !isnothing(hash) && artifact_exists(hash)
+        # The artifact is known, and exists on-disk, we can use it.
+        return artifact_path(hash)
+    end
+
+    # We need to download and extract the dataset.
+    # We aren't going to keep the zip archive around, so download to memory only, then
+    # decompress
+    hash = create_artifact() do artifact_dir
+        url = (
+            "https://github.com/evansiroky/timezone-boundary-builder/releases/download/" *
+            "$version/timezones-with-oceans.geojson.zip"
+        )
+        reader = ZipBufferReader(take!(download(url, IOBuffer())))
+        # We expect this archive to contain a single file, which we will
+        # extract into `artifact_dir`.
+        filename = only(zip_names(reader))
+        # We use `basename` here, since sometimes the archive includes an additional
+        # level of indirection. e.g. 2018d contains:
+        #   dist/combined-with-oceans.json
+        # whereas more recent releases contain:
+        #   combined-with-oceans.json
+        output_path = joinpath(artifact_dir, basename(filename))
+        zip_openentry(reader, filename) do io
+            open(output_path, "w") do f
+                write(f, read(io))
+            end
+        end
+    end
+
+    bind_artifact!(artifacts_toml, artifact_name, hash)
+    return artifact_path(hash)
+end
+
+"""
 Generate the timezone map data from the artifact identified by `version`.
 """
 function generate_data(version::AbstractString)
-    artifact_name = "timezone-boundary-builder-$version"
-    dir = LazyArtifacts.@artifact_str(artifact_name)
+    dir = _get_artifact_path(version)
     obj = open(JSON3.read, joinpath(dir, "combined-with-oceans.json"))
 
     # Vectors that will be populated in the loop below.
@@ -155,8 +202,24 @@ Get a list of versions for we have boundary data. Will be e.g. `["2022a", "2023b
 The list will be sorted in order of increasing versions.
 """
 function _get_boundary_builder_versions()
-    toml = TOML.parsefile(find_artifacts_toml(@__FILE__))
-    return sort!([last(split(name, "-")) for name in keys(toml)])
+    # TODO: There are some older versions, but these provide a differently named
+    #   zip file. We could aim to support these if there is demand.
+    return [
+        "2018d",
+        "2018g",
+        "2018i",
+        "2019a",
+        "2019b",
+        "2020a",
+        "2020d",
+        "2021c",
+        "2022b",
+        "2022d",
+        "2022f",
+        "2022g",
+        "2023b",
+        "2023d",
+    ]
 end
 
 """
