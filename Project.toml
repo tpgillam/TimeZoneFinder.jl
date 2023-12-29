@@ -1,7 +1,7 @@
 name = "TimeZoneFinder"
 uuid = "3ccf6684-3f25-4581-8c58-114637dcab4a"
 authors = ["Tom Gillam <tpgillam@googlemail.com>"]
-version = "0.5.2"
+version = "0.6.0"
 
 [deps]
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
