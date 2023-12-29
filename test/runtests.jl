@@ -1,7 +1,8 @@
 using Memoize
 using Test
 using TimeZoneFinder
-using TimeZoneFinder: _get_boundary_builder_versions, _timezone_boundary_builder_version
+using TimeZoneFinder:
+    _get_artifact_path, _get_boundary_builder_versions, _timezone_boundary_builder_version
 using TimeZones
 
 """
@@ -210,6 +211,13 @@ const TEST_LOCATIONS =
         tzdata_context("2022b") do
             @test timezone_at(50.438114, 30.5179595) == TimeZone("Europe/Kyiv")
         end
+    end
+
+    @testset "_get_artifact_path" begin
+        dir = _get_artifact_path("2023b")
+        @test isfile(joinpath(dir, "combined-with-oceans.json"))
+        dir2 = _get_artifact_path("2023b")
+        @test dir == dir2
     end
 
     @testset "_get_boundary_builder_versions" begin
