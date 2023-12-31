@@ -11,13 +11,15 @@ timezone_at
 
 ## Implementation details
 
-### Artifact
+### Artifacts
 
 This module is based upon OpenStreetMap data, which has been compiled into shape files by [timezone-boundary-builder](https://github.com/evansiroky/timezone-boundary-builder).
-We define an [Artifact](https://pkgdocs.julialang.org/v1/artifacts/) for each release (since `2021c`) of these raw JSON shape files.
+We define an [Artifact](https://pkgdocs.julialang.org/v1/artifacts/) on-demand for each release (since `2018d`) of these raw JSON shape files.
 
-When a new upstream release is made, a new artifact will be created by a package maintainer.
-Refer to the [artifact_build](https://github.com/tpgillam/TimeZoneFinder.jl/tree/main/artifact_build) directory for a helper script.
+Artifacts are created if and when the user requests a particular version of the time zone boundaries.
+Whilst we might want to directly define artifacts pointing at the timezone-boundary-builder releases, we cannot.
+This is because the `Artifacts` module only supports `.tar.gz`, and the official releases uses `.zip`.
+Therefore, we follow [this pattern](https://pkgdocs.julialang.org/v1/artifacts/#Using-Artifacts) for defining new artifacts at runtime.
 
 ### Parsed cache
 
