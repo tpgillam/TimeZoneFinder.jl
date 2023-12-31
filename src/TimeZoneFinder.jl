@@ -286,9 +286,9 @@ julia> timezones_at(69.8, -141)
 
     There are two possible reasons for this:
 
-        1. There were no boundary changes in a tzdata release, which means that there will
-            never be a boundary release for this particular version.
-        2. The boundary dataset is not yet available for a new tzdata release.
+    1. There were no boundary changes in a tzdata release, which means that there will
+        never be a boundary release for this particular version.
+    2. The boundary dataset is not yet available for a new tzdata release.
 """
 function timezones_at(latitude, longitude)
     version = _timezone_boundary_builder_version()
